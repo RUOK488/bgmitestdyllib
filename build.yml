@@ -1,0 +1,25 @@
+name: bgmitestdyllib
+on: [workflow_dispatch]
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Xcode
+      run: sudo xcode-select -s /Applications/Xcode_16.app
+      
+    - name: Build dylib
+      run: |
+        clang++ -arch arm64 -arch arm64e \
+          -isysroot $(xcrun --sdk iphoneos --show-sdk-path) \
+          -mios-version-min=14.0 \
+          -dynamiclib -fobjc-arc \
+          -o BGMIHack.dylib main.mm
+        
+    - name: Upload dylib
+      uses: actions/upload-artifact@v4
+      with:
+        name: BGMI-Hack
+        path: BGMIHack.dylib
+        retention-days: 7
